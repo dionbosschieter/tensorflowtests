@@ -21,7 +21,7 @@ train_examples_batch, train_labels_batch = next(iter(train_data.batch(1)))
 # print(train_examples_batch)
 print(train_labels_batch)
 
-embedding_url = "https://tfhub.dev/google/tf2-preview/gnews-swivel-20dim/1"
+embedding_url = "https://tfhub.dev/google/tf2-preview/nnlm-en-dim128/1"
 print('Lets use a pre trained model from', embedding_url)
 
 hub_layer = hub.KerasLayer(embedding_url, input_shape=[], dtype=tf.string, trainable=True)

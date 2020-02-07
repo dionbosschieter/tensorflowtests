@@ -1,9 +1,10 @@
-# TensorFlow and tf.keras
 from tensorflow import keras
-
-# Helper libraries
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+
+# the verbosity of tensorflow
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 def plot_image(predictions_array, img):
@@ -109,7 +110,7 @@ print('The loss     reached =', test_loss)
 
 img = test_images[1]
 print(img.shape)
-img = (np.expand_dims(img, 0)) # we will need to make a array with only one image in it
+img = (np.expand_dims(img, 0))  # we will need to make a array with only one image in it
 prediction = model.predict(img)[0]
 print('prediction results for the first image = ', prediction)
 predicted_label = np.argmax(prediction)
