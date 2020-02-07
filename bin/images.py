@@ -1,11 +1,11 @@
+import os
+
+# the verbosity of tensorflow, this is on top as it needs to be defined before we import tensorflow
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 from tensorflow import keras
 import numpy as np
 import matplotlib.pyplot as plt
-import os
-
-# the verbosity of tensorflow
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 
 def plot_image(predictions_array, img):
     """

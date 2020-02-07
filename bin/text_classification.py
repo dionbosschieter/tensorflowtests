@@ -1,6 +1,9 @@
-import numpy as np
-import tensorflow as tf
+import os
 
+# the verbosity of tensorflow, this is on top as it needs to be defined before we import tensorflow
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_datasets as tfds
 
@@ -21,7 +24,7 @@ train_examples_batch, train_labels_batch = next(iter(train_data.batch(1)))
 # print(train_examples_batch)
 print(train_labels_batch)
 
-embedding_url = "https://tfhub.dev/google/tf2-preview/nnlm-en-dim128/1"
+embedding_url = "https://tfhub.dev/google/tf2-preview/gnews-swivel-20dim-with-oov/1"
 print('Lets use a pre trained model from', embedding_url)
 
 hub_layer = hub.KerasLayer(embedding_url, input_shape=[], dtype=tf.string, trainable=True)
@@ -61,5 +64,6 @@ verify_text_batch, verify_labels_batch = next(iter(list_of_verify_data))
 print('Working with the following data')
 print(verify_text_batch)
 print('Expected label =', verify_labels_batch)
-prediction = model.predict(list_of_verify_data)[0]
+
+prediction = model.predict(verify_text_batch)[0]
 print('Prediction results for the data =', prediction)
