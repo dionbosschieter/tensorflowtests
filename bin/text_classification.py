@@ -12,6 +12,8 @@ print("Eager mode: ", tf.executing_eagerly())
 print("Hub version: ", hub.__version__)
 print("GPU is", "available" if tf.config.experimental.list_physical_devices("GPU") else "NOT AVAILABLE")
 
+BATCH_SIZE = 128
+
 train_data, validation_data, test_data = tfds.load(
     name='imdb_reviews',
     split=('train[:60%]', 'train[60%:]', 'test'),
@@ -47,18 +49,18 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
 
 print('Lets train the model')
 model.fit(
-    train_data.shuffle(10000).batch(512),
+    train_data.shuffle(10000).batch(BATCH_SIZE),
     epochs=10,
-    validation_data=validation_data.batch(512)
+    validation_data=validation_data.batch(BATCH_SIZE)
 )
 
-test_loss, test_accuracy = model.evaluate(test_data.batch(512), verbose=2)
+test_loss, test_accuracy = model.evaluate(test_data.batch(BATCH_SIZE), verbose=2)
 print('The accuracy reached =', test_accuracy)
 print('The loss     reached =', test_loss)
 
 print('Lets verify the model, getting one item from the test data')
 
-list_of_verify_data = train_data.batch(1)
+list_of_verify_data = train_data.batch(1, drop_remainder=True)
 print(list_of_verify_data)
 verify_text_batch, verify_labels_batch = next(iter(list_of_verify_data))
 print('Working with the following data')

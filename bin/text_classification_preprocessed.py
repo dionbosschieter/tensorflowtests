@@ -1,6 +1,8 @@
 import os
 
 # the verbosity of tensorflow, this is on top as it needs to be defined before we import tensorflow
+import numpy
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import tensorflow
@@ -30,3 +32,46 @@ print('The original text is {}'.format(original_text))
 
 for vec in encoded_text:
     print('{} = {}'.format(vec, encoder.decode([vec])))
+
+for train_example, train_label in train_data.take(1):
+  print('Encoded text =', train_example.numpy())
+  print('Decoded text =', encoder.decode(train_example))
+  print('Label =', train_label.numpy())
+
+print('Lets get the current shapes that is perhaps a bit easier')
+
+BUFFER_SIZE = 1000
+BATCH_SIZE = 32
+# the none here allows for 'dynamic' padding, instead of guessing or getting max the size
+padded_shapes = ((None,), ())
+
+train_batches = (train_data.shuffle(BUFFER_SIZE).padded_batch(BATCH_SIZE, padded_shapes))
+test_batches = (test_data.padded_batch(BATCH_SIZE, padded_shapes))
+
+for example_batch, label_batch in train_batches.take(2):
+    print('Batch shape = ', example_batch.shape)
+    print('label shape = ', label_batch.shape)
+
+print('Lets build a continuous bag of words style model')
+model = tensorflow.keras.Sequential([
+    tensorflow.keras.layers.Embedding(encoder.vocab_size, 16),
+    tensorflow.keras.layers.GlobalAveragePooling1D(),
+    tensorflow.keras.layers.Dense(1)
+])
+
+model.summary()
+
+print('We are going to compile the model')
+model.compile(optimizer='adam',
+              loss=tensorflow.losses.BinaryCrossentropy(from_logits=True),
+              metrics=['accuracy'])
+
+print('Lets train the model')
+history = model.fit(train_batches, epochs=10, validation_data=test_batches, validation_steps=30)
+
+loss, accuracy = model.evaluate(test_batches, verbose=2)
+print('Loss =', loss)
+print('Accuracy =', accuracy)
+
+history_dict = history.history
+print('Got a history dict with the following keys =', history_dict.keys())
