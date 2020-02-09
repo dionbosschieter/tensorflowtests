@@ -1,15 +1,20 @@
 import os
 
 # the verbosity of tensorflow, this is on top as it needs to be defined before we import tensorflow
-import numpy
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+import numpy
 import tensorflow
 from tensorflow import keras
 import tensorflow_datasets
+import matplotlib.pyplot
 
 print(tensorflow.__version__)
+
+BUFFER_SIZE = 1000
+BATCH_SIZE = 32
+EPOCHS = 10
 
 (train_data, test_data), info = tensorflow_datasets.load(
     # Use the version pre-encoded with an ~8k vocabulary.
@@ -40,8 +45,6 @@ for train_example, train_label in train_data.take(1):
 
 print('Lets get the current shapes that is perhaps a bit easier')
 
-BUFFER_SIZE = 1000
-BATCH_SIZE = 32
 # the none here allows for 'dynamic' padding, instead of guessing or getting max the size
 padded_shapes = ((None,), ())
 
@@ -67,7 +70,7 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 print('Lets train the model')
-history = model.fit(train_batches, epochs=10, validation_data=test_batches, validation_steps=30)
+history = model.fit(train_batches, epochs=EPOCHS, validation_data=test_batches, validation_steps=30)
 
 loss, accuracy = model.evaluate(test_batches, verbose=2)
 print('Loss =', loss)
@@ -75,3 +78,16 @@ print('Accuracy =', accuracy)
 
 history_dict = history.history
 print('Got a history dict with the following keys =', history_dict.keys())
+
+print('Lets plot these dict values')
+
+x_axes = range(1, EPOCHS + 1)
+for key in history_dict.keys():
+    y_axes = numpy.array(history_dict[key]) * 100
+    matplotlib.pyplot.plot(x_axes, y_axes, 'b', color=numpy.random.rand(3, ), label=key)
+
+matplotlib.pyplot.title('Training history')
+matplotlib.pyplot.xlabel('Training loops')
+matplotlib.pyplot.ylabel('Percentage')
+matplotlib.pyplot.legend()
+matplotlib.pyplot.show()
