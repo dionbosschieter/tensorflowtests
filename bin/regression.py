@@ -28,6 +28,7 @@ raw_dataset = pandas.read_csv(dataset_path, names=column_names,
                               sep=" ", skipinitialspace=True)
 
 dataset = raw_dataset.copy()
+dataset = dataset.dropna()
 print(dataset.tail())
 
 print(dataset.isna().sum())
@@ -111,3 +112,4 @@ history = model.fit(
     epochs=EPOCHS, validation_split=0.2, verbose=0,
     callbacks=[EpochDots()]
 )
+
