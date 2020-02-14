@@ -1,5 +1,5 @@
 import pathlib
-import matplotlib
+import matplotlib.pyplot
 import numpy
 import pandas
 import seaborn
@@ -11,7 +11,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import tensorflow
 import tensorflow_docs
-from bin.epochdots import EpochDots
+from src.epochdots import EpochDots
+from src.plots import HistoryPlotter
 
 dataset_path = tensorflow.keras.utils.get_file(
     "auto-mpg.data",
@@ -113,3 +114,13 @@ history = model.fit(
     callbacks=[EpochDots()]
 )
 
+history_dataframe = pandas.DataFrame(history.history)
+
+print()
+print(history_dataframe.tail())
+
+plotter = HistoryPlotter(smoothing_std=2)
+
+plotter.plot({'Basic': history}, metric='mae')
+matplotlib.pyplot.ylim([0,20])
+matplotlib.pyplot.ylabel('MSE [MPG^2]')
