@@ -45,7 +45,7 @@ print('Got test data and train data, here is a tail of the test data:')
 print(test_dataset.tail())
 
 plot = seaborn.pairplot(train_dataset[["MPG", "Cylinders", "Displacement", "Weight"]], diag_kind="kde")
-plot.savefig("/tmp/fig.png")
+matplotlib.pyplot.show()
 
 # overall statistics
 train_stats = train_dataset.describe()
@@ -102,6 +102,8 @@ def build_model():
 
 
 model = build_model()
+early_stop = tensorflow.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
+
 print(model.summary())
 
 example_batch = normalized_train_data[:10]
@@ -111,7 +113,7 @@ print('Predictions from the untrained model:', example_result)
 history = model.fit(
     normalized_train_data, train_labels,
     epochs=EPOCHS, validation_split=0.2, verbose=0,
-    callbacks=[EpochDots()]
+    callbacks=[early_stop, EpochDots()]
 )
 
 history_dataframe = pandas.DataFrame(history.history)
@@ -119,8 +121,24 @@ history_dataframe = pandas.DataFrame(history.history)
 print()
 print(history_dataframe.tail())
 
-plotter = HistoryPlotter(smoothing_std=2)
+# clear the current plots first
+matplotlib.pyplot.clf()
 
+plotter = HistoryPlotter(smoothing_std=2)
 plotter.plot({'Basic': history}, metric='mae')
 matplotlib.pyplot.ylim([0,20])
+matplotlib.pyplot.ylabel('MAE [MPG^2]')
+matplotlib.pyplot.show()
+
+plotter.plot({'Basic': history}, metric = "mse")
+matplotlib.pyplot.ylim([0, 20])
 matplotlib.pyplot.ylabel('MSE [MPG^2]')
+matplotlib.pyplot.show()
+
+print('Lets see how good the model works when applying the test data for validation')
+loss, mae, mse = model.evaluate(normalized_test_data, test_labels, verbose=2)
+print("Testing set Mean Abs Error: {:5.2f} MPG".format(mae))
+
+# test_predictions = model.predict(normalized_test_data).flatten()
+# a = matplotlib.pyplot.axes(aspect='equal')
+
