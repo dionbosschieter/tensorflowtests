@@ -139,6 +139,22 @@ print('Lets see how good the model works when applying the test data for validat
 loss, mae, mse = model.evaluate(normalized_test_data, test_labels, verbose=2)
 print("Testing set Mean Abs Error: {:5.2f} MPG".format(mae))
 
-# test_predictions = model.predict(normalized_test_data).flatten()
-# a = matplotlib.pyplot.axes(aspect='equal')
+test_predictions = model.predict(normalized_test_data).flatten()
 
+print("Lets plot the predictions vs the labels")
+matplotlib.pyplot.clf()
+a = matplotlib.pyplot.axes(aspect='equal')
+matplotlib.pyplot.scatter(test_labels, test_predictions)
+matplotlib.pyplot.xlabel('True Values [MPG]')
+matplotlib.pyplot.ylabel('Predictions [MPG]')
+lims = [0, 50]
+matplotlib.pyplot.xlim(lims)
+matplotlib.pyplot.ylim(lims)
+matplotlib.pyplot.plot(lims, lims)
+matplotlib.pyplot.show()
+
+error = test_predictions - test_labels
+matplotlib.pyplot.hist(error, bins = 25)
+matplotlib.pyplot.xlabel("Prediction Error [MPG]")
+matplotlib.pyplot.ylabel("Count")
+matplotlib.pyplot.show()
