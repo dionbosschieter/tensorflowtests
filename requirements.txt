@@ -65,7 +65,7 @@ tfds-nightly==2.0.0.dev202002070105
 tqdm==4.42.1
 twine==3.1.1
 typing==3.7.4.1
-urllib3==1.25.8
+urllib3==1.26.5
 ushlex==0.99.1
 webencodings==0.5.1
 websocket-client==0.57.0
